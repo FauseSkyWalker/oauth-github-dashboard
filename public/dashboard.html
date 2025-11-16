@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Analytics Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid white;
+        }
+
+        .user-details h2 {
+            font-size: 1.2rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .user-details p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .dashboard {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+
+        .section h3 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+        }
+
+        .repo-list {
+            list-style: none;
+        }
+
+        .repo-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .repo-item:hover {
+            background: #f9f9f9;
+        }
+
+        .repo-item:last-child {
+            border-bottom: none;
+        }
+
+        .repo-info h4 {
+            color: #333;
+            margin-bottom: 0.3rem;
+        }
+
+        .repo-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .repo-stats {
+            display: flex;
+            gap: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .repo-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+
+        .activity-item {
+            padding: 0.8rem;
+            border-left: 3px solid #667eea;
+            margin-bottom: 1rem;
+            background: #f9f9f9;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .activity-type {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .activity-repo {
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="user-info">
+                <img id="userAvatar" class="user-avatar" src="" alt="User Avatar">
+                <div class="user-details">
+                    <h2 id="userName">Loading...</h2>
+                    <p id="userBio"></p>
+                </div>
+            </div>
+            <a href="/logout" class="logout-btn">Logout</a>
+        </div>
+    </div>
+
+    <div class="dashboard">
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-value" id="repoCount">-</div>
+                <div class="stat-label">Repositories</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="pushEvents">-</div>
+                <div class="stat-label">Recent Pushes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="pullRequests">-</div>
+                <div class="stat-label">Pull Requests</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalActivity">-</div>
+                <div class="stat-label">Total Activities</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Recent Repositories</h3>
+            <ul class="repo-list" id="repoList">
+                <li class="loading">Loading repositories...</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h3>Recent Activity</h3>
+            <div id="activityList">
+                <div class="loading">Loading activity...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fetch and display user data
+        async function loadDashboard() {
+            try {
+                // Fetch dashboard data
+                const response = await fetch('/api/dashboard');
+                if (!response.ok) {
+                    throw new Error('Failed to load dashboard data');
+                }
+                const data = await response.json();
+
+                // Update user info
+                document.getElementById('userName').textContent = data.user.name || data.user.login;
+                document.getElementById('userBio').textContent = data.user.bio || `@${data.user.login}`;
+                document.getElementById('userAvatar').src = data.user.avatar_url;
+
+                // Update repository count
+                document.getElementById('repoCount').textContent = data.repositories.length;
+
+                // Display repositories
+                const repoList = document.getElementById('repoList');
+                repoList.innerHTML = data.repositories.map(repo => `
+                    <li class="repo-item">
+                        <div class="repo-info">
+                            <h4>${repo.name}</h4>
+                            <p>${repo.description || 'No description'}</p>
+                        </div>
+                        <div class="repo-stats">
+                            <span class="repo-stat">Stars: ${repo.stargazers_count}</span>
+                            <span class="repo-stat">Forks: ${repo.forks_count}</span>
+                            <span class="repo-stat">${repo.language || 'N/A'}</span>
+                        </div>
+                    </li>
+                `).join('');
+
+                // Fetch and display stats
+                const statsResponse = await fetch('/api/stats');
+                if (statsResponse.ok) {
+                    const stats = await statsResponse.json();
+
+                    document.getElementById('pushEvents').textContent = stats.pushEvents;
+                    document.getElementById('pullRequests').textContent = stats.pullRequests;
+                    document.getElementById('totalActivity').textContent = stats.totalEvents;
+
+                    // Display recent activity
+                    const activityList = document.getElementById('activityList');
+                    activityList.innerHTML = stats.recentActivity.slice(0, 5).map(activity => `
+                        <div class="activity-item">
+                            <div class="activity-type">${activity.type.replace('Event', '')}</div>
+                            <div class="activity-repo">${activity.repo.name}</div>
+                        </div>
+                    `).join('');
+                }
+
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                document.querySelector('.dashboard').innerHTML = `
+                    <div class="error">
+                        Error loading dashboard data. Please try logging in again.
+                    </div>
+                `;
+            }
+        }
+
+        // Load dashboard when page loads
+        loadDashboard();
+    </script>
+</body>
+</html>
