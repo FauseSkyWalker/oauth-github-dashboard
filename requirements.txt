@@ -1,0 +1,24 @@
+# ===============================================
+# GitHub OAuth Dashboard - Python Dependencies
+# ===============================================
+# FastAPI implementation requirements
+# Install with: pip install -r requirements.txt
+
+# Web Framework
+fastapi==0.104.1            # Modern async web framework
+uvicorn[standard]==0.24.0   # ASGI server with WebSocket support
+
+# HTTP Client
+httpx==0.25.2               # Async HTTP client for API requests
+
+# Environment & Configuration
+python-dotenv==1.0.0        # Load environment variables from .env file
+
+# Session Management
+itsdangerous==2.2.0         # Required for secure session signing
+# starlette==0.27.0         # Already installed with FastAPI
+
+# Optional: Development tools
+# black==23.11.0            # Code formatter
+# pytest==7.4.3             # Testing framework
+# pytest-asyncio==0.21.1    # Async support for pytest

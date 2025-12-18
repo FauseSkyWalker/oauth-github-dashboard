@@ -84,7 +84,7 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
-# Python (if using Python backend)
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -93,6 +93,16 @@ __pycache__/
 venv/
 env/
 ENV/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+*.egg-info/
+dist/
+build/
 
 # Documentation
 docs/_build/
